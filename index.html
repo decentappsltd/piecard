@@ -1,67 +1,168 @@
 <!DOCTYPE html>
-<html>
-  <head>            
-    <!--Scripts-->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="/js/bg.js"></script>
-    
-    <!--CSS-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="icon" type="image/png" href="../img/logo.png">
-    
-    <!--Google Fonts-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap" rel="stylesheet">
-  </head>
-  
-  <body>
-    <h1>Pi eCard</h1>
-        <div class="panel" data-color="white">
+<html lang="en">
 
-    <div class="left">
-      <img src="/img/card.png" class="card" alt="card">
-      <button onclick="location.href='/html/preorder.html'" style="text-align: center; background: #f4f4f4; color: #642A82">Pre-Order Now!</button>
-    </div>
-    <h3 style="margin-top: 50px;">Buy, spend and withdraw your Pi at any time- its value is safe!</h3>
-    
-    <div class="right desktop">
-      <br>
-      <h2>From Decent Apps</h2>
-      <img class="app" src="http://decentapps.co.uk/img/logo.png" style="width: 150px;" alt="decentapps.co.uk">
-    </div>
-    </div>
+<head>
+  <!--CSS-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="icon" type="image/png" href="/img/logo.png">
 
-    <div class="panel" data-color="yellow">
-    <div class="row">
-    <h2>How it works:</h2>
-    <p2 style="text-align: justify;">PiCard is the innovative solution to the issues presented during the world’s transition from fiat currency to crypto. Currently, the majority of highstreet retailers don’t accept any form of cryptocurrency as payment, despite them rapidly gaining traction. With over 300 million crypto currency users worldwide, with over 30 million on the Pi Network™, there is a great social change currently happening. This, however, will be a very timely transition, which requires a solid stepping stone to kickstart the change, in the form of a proof of concept intermediate solution.
- <br><br>
-PiCard aims to be this solution. Pioneers will be able to buy Pi credits through our app, which will be backed 1:1 with Pi in our treasury wallet. As a result, Pioneers will always be able to withdraw their Pi at any time. Using Visa APIs, Pioneers will be able to spend this Pi credit online or in the stores of any of the 44 million Visa-accepting businesses. The card will either be a physical card or digital wallet.</p2>
-      <br><br>
-      <button onclick="location.href='http://www.decentapps.co.uk'" style="text-align: center; background: #F1E5AC; color: #642A82">About us</button>
+  <!--Google Fonts-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap" rel="stylesheet">
+  <!--   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+
+  <title>Pi eCard</title>
+
+  <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <script>
+    const Pi = window.Pi;
+    Pi.init({
+      version: "2.0",
+      sandbox: false
+    })
+  </script>
+</head>
+
+<body>
+  <!--   Invoice -->
+  <div id="a" class="box" onclick="activeBox(a)">
+    <h3>Invoice ↓</h3>
+
+    <h4 style="margin-top: 8%; color: #b44afb;">New invoice</h4>
+    <div id="createInvoice">
+      <form action="/invoice" method="POST" id="form">
+        <label for="amount">Enter amount:</label><br>
+        <input id="amount" name="amount" type="number" required></input><br>
+        <label for="memo">Add memo:</label><br>
+        <input id="memo" name="memo" type="text"></input><br>
+        <input type="button" value="Create" id="invoice_btn" onclick="createInvoice()"></input>
+      </form>
     </div>
+    <br>
+    <p2 id="invoiceProgress"></p2><br>
+    <div id="qrcode"></div>
+  </div>
+
+  <!--   Pay -->
+  <div id="b" class="box" onclick="activeBox(b)">
+    <h3>Pay ↑</h3><br><br>
+
+    <div id="container">
+      <button id="btn-scan-qr">Scan QR</button>
+      <canvas hidden="" id="qr-canvas"></canvas>
+      <div id="qr-result" hidden="">
+        <br><br><b>Payment ID:</b> <span id="outputData"></span><br>
+      </div><br>
+      <!--         <button onclick="payUsername()">Pay by username</button> -->
+    </div><br><br>
+    <a id="payStatus"></a><br>
+    <i id="payInfoI">Click to scan vendor's QR code & make the payment.</i>
+  </div>
+
+  <!--   Withdraw -->
+  <div id="c" class="box" onclick="activeBox(c)">
+    <h3>Withdraw</h3>
+
+    <p2>Balance:</p2>
+    <a id="balance">loading..</a><br><br>
+
+    <form action="/withdraw" method="POST" id="form">
+      <input id="withdrawAmount" name="amount" type="number" placeholder="Enter amount.." required></input>
+      <input type="button" id="max" value="Max" onclick="maxWithdrawal()"></input>
+    </form><br>
+    <button onclick="withdraw()">Withdraw</button><br><br>
+    
+    <i>All Pi withdrawn goes directly to your Pi account's connected wallet.</i>
+  </div>
+
+  <!--   History -->
+  <div id="d" class="box" onclick="activeBox(d)">
+    <h3>History</h3>
+
+    <p2>Logged in as:</p2>
+    <a id="username">loading..</a><br><br>
+
+    <div id="historySection"></div>
+  </div>
+
+  <!--   Floating tab -->
+  <div id="float">
+    <a id="piBrowser" onclick="openBrowser()">Pi</a>
+    <a style="font-size:24px" class="fa" onclick="openInfo()">&#xf05a;</a>
+    <a class="fa" onclick="location.href='/'">&#xf021;</a>
+  </div>
+
+  <!--     Modals -->
+  <div class="modal" id="info">
+    <div class="modal-dialog">
+      <header style="color: #b44afb" class="modal-header">
+        <h3>Welcome to Pi eCard
+          <button class="close-modal" style="width: 40px;" onclick="closeInfo()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <h4>What is Pi eCard?</h4><br>
+        <p3> Pi eCard is the easy POS (Point of Sale) system for the Pi Network, enabling in-person vendors and Pioneers to invoice others without the need to type in long public keys. The status of the payment can be seen at any stage by both the vendor and the client for clarity and peace of mind. </p3><br><br><br>
+
+        <h4>How to use Pi eCard- Vendors:</h4><br>
+        <ol>
+          <li>
+            Click on the 'Invoice' box and enter the amount you want to invoice and a small memo for your personal use.
+          </li>
+          <li>
+            Click 'Create' and wait for the QR code to appear. Ask your client to scan the QR code (see below).
+          </li>
+          <li>
+            Wait for the client to complete their Pi payment flow and watch the status bar for updates.
+          </li>
+          <li>
+            Once the client has completed the payment flow, the status bar will inform you of its completion and you can see the value added to your app's balance. You can withdraw this to your Pi Wallet at any time, or keep it safely in the Pi eCard app.
+          </li>
+        </ol><br><br>
+
+        <h4>How to use Pi eCard- Client:</h4><br>
+        <ol>
+          <li>
+            Ensuring you are in the Pi Browser, click the 'Scan QR' button and allow the camera permission.
+          </li>
+          <li>
+            Point the camera at the QR code. You will be alerted of the transaction once scanned.
+          </li>
+          <li>
+            Click 'ok' on the popup to confirm the payment.
+          </li>
+          <li>
+            Complete the standard Pi Payment flow.
+          </li>
+          <li>
+            The payment will now be complete, check with the vender to verify with them.
+          </li>
+        </ol>
+
+      </section>
     </div>
-    
-    <div class="panel" data-color="white">
-      <h2>Manage your Pi Balance</h2>
-      <img src="/img/app.png" style="height: 80vh; margin-left: 5vw;" alt="app image">
-    </div>
-    
-    <div class="panel" data-color="purple">
-    
-      <button onclick="location.href='/html/preorder.html'" style="text-align: center;">Pre-Order Now!</button>
-      <ul>
-        <li>Manage your Pi</li>
-        <li>Buy Pi directly</li>
-        <li>Spend Pi in over 44 million stores</li>
-        <li>Withdraw your Pi to your wallet</li>
-        <li>Your balance is always backed by actual Pi in our treasuries</li>
-        <li>The value of your Pi is safe</li>
-        <li>Only a 2% transaction fee</li>
-      </ul>
-      
-      <h4>&copy; Decent Apps Ltd</h4>
-    </div>    
-  </body>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+  <script src="js/pipayment.js"></script>
+  <script src="js/scripts.js"></script>
+  <script src="js/routes.js"></script>
+  <script src="https://kit.fontawesome.com/3aea44e36d.js" crossorigin="anonymous"></script>
+
+  <script>
+    if (sessionStorage.userSession !== null) {
+      myProfile();
+    }
+    if (navigator.userAgent.toLowerCase().indexOf("pibrowser") >= 0) {
+      document.getElementById("piBrowser").style.display = "none";
+    }
+  </script>
+
+</body>
+
+</html>
