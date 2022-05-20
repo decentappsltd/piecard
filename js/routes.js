@@ -286,5 +286,5 @@ async function getInvoiceStatus() {
 }
 
 function openBrowser() {
-  window.open("pi://piecard.co.uk");
+  window.open("pi://www.piecard.co.uk");
 }
