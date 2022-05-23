@@ -59,8 +59,11 @@ async function piLogin() {
 // Display profile names
 async function myProfile() {
   const username = document.querySelector("#username");
+  const name = document.querySelector("#name");
   const balance = document.querySelector("#balance");
+  const balanceTwo = document.querySelector("#balanceTwo");
   const elem = document.createElement("i");
+  const elemTwo = document.createElement("i");
   const authToken = localStorage.getItem("userSession");
 
   try {
@@ -73,8 +76,12 @@ async function myProfile() {
     if (response.status === 200 || 304) {
       balance.textContent = `${response.data.user.balance}`;
       elem.textContent = `pi`;
+      balanceTwo.textContent = response.data.user.balance;
+      elemTwo.textContent = `pi`;
       balance.appendChild(elem);
+      balanceTwo.appendChild(elemTwo);
       username.textContent = `@${response.data.user.username}`;
+      name.textContent = response.data.user.username;
       const history = response.data.user.history;
       shortHistory(history);
     }

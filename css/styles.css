@@ -8,16 +8,21 @@ body {
   justify-content: center;
   flex-wrap: wrap;
   background: #b44afb;
+/*   background-image: url("/bg.png"); */
+  background-size: auto;
   font-family: "Ubuntu", sans-serif;
 }
 button, #invoice_btn {
-  border: inset 2px #b44afb;
+  border: solid 2px #4A91FB;
   padding: 5px 10px;
   background: #fff;
   margin-top: 10px;
   border-radius: 5px;
   margin-left: 10%;
   width: 80%;
+}
+h3 {
+  color: #5B4AFB;
 }
 .box {
   width: 41vw;
@@ -33,7 +38,7 @@ button, #invoice_btn {
 }
 .active {
   width: 90vw;
-  height: 65vh;
+  height: 70vh;
   order: 4;
 }
 .inactive {
@@ -67,7 +72,7 @@ input {
   width: 60%;
 }
 #max {
-  border: inset 2px #b44afb;
+  border: solid 2px #4A91FB;
   background: #fff;
   margin-top: 10px;
   border-radius: 5px;
@@ -172,4 +177,32 @@ input {
 }
 li {
   margin-bottom: 10px;
+}
+#card {
+  width: 100%;
+  border-radius: 5%;
+}
+#balanceTag {
+  position: absolute;
+  margin-left: 23%;
+  margin-top: 23%;
+  color: #fff;
+  font-size: 17px;
+}
+#balanceTwo {
+  position: absolute;
+  margin-left: 80px;
+  margin-top: -20px;
+  color: #fff;
+  font-size: 20px;
+}
+#name {
+   position: absolute;
+  margin-left: 10%;
+  margin-top: 40%;
+  color: #fff;
+  font-size: 20px;
+}
+.a, .b, .c, .d  {
+  display: none;
 }

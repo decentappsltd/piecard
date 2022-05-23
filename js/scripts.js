@@ -7,18 +7,82 @@ function activeBox(clicked) {
     const clickedBox = document.getElementById("a");
     clickedBox.classList.remove("inactive");
     clickedBox.classList.add("active");
+    const a = document.getElementsByClassName("a");
+    for (const item of a) {
+      item.style.display = "block";
+    }
+    const b = document.getElementsByClassName("b");
+    for (const item of b) {
+      item.style.display = "none";
+    }
+    const c = document.getElementsByClassName("c");
+    for (const item of c) {
+      item.style.display = "none";
+    }
+    const d = document.getElementsByClassName("d");
+    for (const item of a) {
+      item.style.display = "none";
+    }
   } else if (clicked == b) {
     const clickedBox = document.getElementById("b");
     clickedBox.classList.remove("inactive");
     clickedBox.classList.add("active");
+    const a = document.getElementsByClassName("a");
+    for (const item of a) {
+      item.style.display = "none";
+    }
+    const b = document.getElementsByClassName("b");
+    for (const item of b) {
+      item.style.display = "block";
+    }
+    const c = document.getElementsByClassName("c");
+    for (const item of c) {
+      item.style.display = "none";
+    }
+    const d = document.getElementsByClassName("d");
+    for (const item of a) {
+      item.style.display = "none";
+    }
   } else if (clicked == c) {
     const clickedBox = document.getElementById("c");
     clickedBox.classList.remove("inactive");
     clickedBox.classList.add("active");
+    const a = document.getElementsByClassName("a");
+    for (const item of a) {
+      item.style.display = "none";
+    }
+    const b = document.getElementsByClassName("b");
+    for (const item of b) {
+      item.style.display = "none";
+    }
+    const c = document.getElementsByClassName("c");
+    for (const item of c) {
+      item.style.display = "block";
+    }
+    const d = document.getElementsByClassName("d");
+    for (const item of a) {
+      item.style.display = "none";
+    }
   } else {
     const clickedBox = document.getElementById("d");
     clickedBox.classList.remove("inactive");
     clickedBox.classList.add("active");
+    const a = document.getElementsByClassName("a");
+    for (const item of a) {
+      item.style.display = "none";
+    }
+    const b = document.getElementsByClassName("b");
+    for (const item of b) {
+      item.style.display = "none";
+    }
+    const c = document.getElementsByClassName("c");
+    for (const item of c) {
+      item.style.display = "none";
+    }
+    const d = document.getElementsByClassName("d");
+    for (const item of a) {
+      item.style.display = "block";
+    }
   }
 }
 
@@ -75,7 +139,14 @@ btnScanQR.onclick = () => {
       tick();
       scan();
     });
+    const scanningError = setTimeout(scanningErr, 1500);
 };
+
+function scanningErr() {
+  if (scanning === false) {
+    alert("Camera is blocked. Please enable the camera permission for the Pi Browser in your phone's settings");
+  }
+}
 
 function tick() {
   canvasElement.height = video.videoHeight;
