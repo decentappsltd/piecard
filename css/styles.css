@@ -15,18 +15,21 @@ body {
 button, #invoice_btn {
   border: solid 2px #4A91FB;
   padding: 5px 10px;
-  background: #fff;
+  background: #4A91FB;
+  color: #ffffff;
+  font-weight: bold;
   margin-top: 10px;
   border-radius: 5px;
   margin-left: 10%;
   width: 80%;
+  cursor: pointer;
 }
 h3 {
   color: #5B4AFB;
 }
 .box {
   width: 41vw;
-  height: 41vh;
+  height: 45vh;
   border-radius: 5px;
   margin: 1vw;
   padding: 2vw;
@@ -62,18 +65,23 @@ input {
   width: 90vw;
 }
 #amount {
-  width: 100%;
+  width: 95%;
 }
 #memo {
-  width: 100%;
+  width: 95%;
   height: 2rem;
+}
+#qrcode {
+  margin: auto;
 }
 #withdrawAmount {
   width: 60%;
 }
 #max {
-  border: solid 2px #4A91FB;
-  background: #fff;
+  background: #4A91FB;
+  color: #ffffff;
+  font-weight: bold;
+  border: solid 1px #4A91FB;
   margin-top: 10px;
   border-radius: 5px;
   width: 25%;
@@ -128,12 +136,12 @@ input {
 	box-shadow: 2px 2px 30px #000;
 }
 .fa {
-  marign: auto;
+  margin: auto;
   padding: 3px;
 }
 #piBrowser {
   display: block;
-  marign: auto;
+  margin: auto;
   padding: 3px;
 }
 .modal {
@@ -166,9 +174,6 @@ input {
 }
 .modal-header {
   background: var(--lightgray);
-}
-.modal-header {
-/*   display: flex; */
   align-items: center;
   justify-content: space-between;
 }
@@ -197,7 +202,7 @@ li {
   font-size: 20px;
 }
 #name {
-   position: absolute;
+  position: absolute;
   margin-left: 10%;
   margin-top: 40%;
   color: #fff;
@@ -205,4 +210,17 @@ li {
 }
 .a, .b, .c, .d  {
   display: none;
+}
+#qrImg {
+  width: 31vw;
+  display: block;
+  position: relative;
+  margin: auto;
+}
+#payStatusDiv, #invoiceStatusDiv {
+  border-top: solid 1px #5B4AFB;
+}
+h4 {
+  color: #5B4AFB;
+  margin-bottom: 5px;
 }

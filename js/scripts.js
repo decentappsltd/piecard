@@ -1,5 +1,9 @@
 function activeBox(clicked) {
   const boxes = document.getElementsByClassName("box");
+  const landingItems = document.querySelectorAll(".landing");
+  for (const landing of landingItems) {
+    landing.style.display = "none";
+  }
   for (const box of boxes) {
     box.classList.add("inactive");
   }

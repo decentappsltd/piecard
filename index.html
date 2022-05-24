@@ -30,8 +30,7 @@
   <!--   Invoice -->
   <div id="a" class="box" onclick="activeBox(a)">
     <h3>Invoice ↓</h3>
-
-    <h4 style="margin-top: 8%; color: #b44afb;">New invoice</h4>
+    <br>
     <div id="createInvoice">
       <form action="/invoice" method="POST" id="form">
         <label for="amount">Enter amount:</label><br>
@@ -42,13 +41,18 @@
       </form>
     </div>
     <br>
-    <p2 id="invoiceProgress"></p2><br>
+    <div id="invoiceStatusDiv">
+      <h4>Invoice Status</h4>
+      <p2 id="invoiceProgress">Create an invoice to take a payment</p2><br>
+    </div>
     <div id="qrcode"></div>
   </div>
 
   <!--   Pay -->
   <div id="b" class="box" onclick="activeBox(b)">
-    <h3>Pay ↑</h3><br><br>
+    <h3>Pay ↑</h3><br>
+    
+    <img src="/blackqr.png" id="qrImg" class="landing"></img>
 
     <div id="container">
       <button id="btn-scan-qr">Scan QR</button>
@@ -57,9 +61,11 @@
         <br><br><b>Payment ID:</b> <span id="outputData"></span><br>
       </div><br>
       <!--         <button onclick="payUsername()">Pay by username</button> -->
-    </div><br><br>
-    <a id="payStatus"></a><br>
-    <i id="payInfoI">Click to scan vendor's QR code & make the payment.</i>
+    </div><br>
+    <div id="payStatusDiv">
+      <h4>Payment Status</h4>
+      <a id="payStatus">Click & to scan QR code to start the payment</a><br>
+    </div>
   </div>
 
   <!--   Withdraw -->
