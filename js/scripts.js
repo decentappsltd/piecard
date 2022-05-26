@@ -107,7 +107,7 @@ const canvas = canvasElement.getContext("2d");
 const qrResult = document.getElementById("qr-result");
 const outputData = document.getElementById("outputData");
 const btnScanQR = document.getElementById("btn-scan-qr");
-const payInfoI = document.getElementById("payInfoI");
+const payStatus = document.getElementById("payStatus");
 
 let scanning = false;
 
@@ -124,7 +124,7 @@ qrcode.callback = res => {
     qrResult.hidden = false;
     canvasElement.hidden = true;
     btnScanQR.hidden = false;
-    payInfoI.hidden = true;
+    payStatus.textContent = "QR code found, processing..";
   }
 };
 
@@ -136,14 +136,14 @@ btnScanQR.onclick = () => {
       qrResult.hidden = true;
       btnScanQR.hidden = true;
       canvasElement.hidden = false;
-      payInfoI.hidden = true;
+      payStatus.textContent = "Scanning for QR code..";
       video.setAttribute("playsinline", true);
       video.srcObject = stream;
       video.play();
       tick();
       scan();
     });
-    const scanningError = setTimeout(scanningErr, 1500);
+    const scanningError = setTimeout(scanningErr, 2000);
 };
 
 function scanningErr() {
