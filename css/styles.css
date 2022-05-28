@@ -72,7 +72,11 @@ input {
   height: 2rem;
 }
 #qrcode {
+  display: block;
+  position: relative;
   margin: auto;
+/*   background-color: #ffffff;
+  padding: 5px; */
 }
 #withdrawAmount {
   width: 60%;
@@ -212,7 +216,7 @@ li {
   display: none;
 }
 #qrImg {
-  width: 31vw;
+  width: 110px;
   display: block;
   position: relative;
   margin: auto;

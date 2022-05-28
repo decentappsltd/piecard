@@ -264,7 +264,8 @@ async function createInvoice() {
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H
     });
-    document.getElementById("qrcode").style.margin = "auto";
+    document.getElementById("qrcode").style.padding = "5px";
+    document.getElementById("qrcode").style.background = "#fff";
     localStorage.invoiceID = data.id;
     getInvoiceStatus();
   }
