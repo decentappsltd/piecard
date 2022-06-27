@@ -46,7 +46,7 @@
         <input id="amount" name="amount" type="number" required></input><br>
         <label for="memo">Add memo:</label><br>
         <input id="memo" name="memo" type="text"></input><br>
-        <input type="button" value="Create" id="invoice_btn" onclick="createInvoice()"></input>
+        <input type="button" value="Create" id="invoice_btn" onclick="mainnet()"></input>
       </form>
     </div>
     <br>
@@ -64,7 +64,8 @@
     <img src="/img/blackqr.png" id="qrImg" class="landing"></img>
 
     <div id="container">
-      <button id="btn-scan-qr">Camera</button>
+<!--       <button id="btn-scan-qr">Camera</button> -->
+      <button onclick="mainnet()">Camera</button>
       <canvas hidden="" id="qr-canvas"></canvas>
       <div id="qr-result" hidden="">
         <br><br><b>Payment ID:</b> <span id="outputData"></span><br>
@@ -88,7 +89,7 @@
       <input id="withdrawAmount" name="amount" type="number" placeholder="Enter amount.." required></input>
       <input type="button" id="max" value="Max" onclick="maxWithdrawal()"></input>
     </form><br>
-    <button onclick="withdraw()">Withdraw</button><br><br>
+    <button onclick="mainnet()">Withdraw</button><br><br>
     
     <p2 class="c" id="balanceTag">Balance: <a class="c" id="balanceTwo"></a></p2>
     <a class="c" id="name"></a>
@@ -177,6 +178,10 @@
     }
     if (navigator.userAgent.toLowerCase().indexOf("pibrowser") >= 0) {
       document.getElementById("piBrowser").style.display = "none";
+    }
+    
+    function mainnet() {
+      alert("Payments are now paused until Mainnet!");
     }
   </script>
 
