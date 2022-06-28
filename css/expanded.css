@@ -1,0 +1,55 @@
+.subheading {
+  font-size: 16px;
+  margin-left: 2%;
+}
+form {
+  font-size: 15px;
+}
+.field {
+  margin-top: 10px;
+  height: 20px;
+  padding: 10px;
+  width: 90%;
+  margin-left: 2%;
+}
+.memo {
+  height: 50px;
+}
+#invoice_btn, .button {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 2%;
+}
+#payment_sentence {
+  font-size: 13px;
+  margin-top: 20px;
+  margin-left: 2%;
+}
+#qrImg {
+  width: 100px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+#btn-scan-qr {
+  padding: 12px;
+}
+#camSpan {
+  padding-left: 60px;
+  font-size: 20px;
+}
+#max {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+#wallet, #crypto {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: calc(48% - 3px);
+}
+#wallet {
+  margin-left: 2%;
+}
+.container {
+  margin-top: 10px;
+}

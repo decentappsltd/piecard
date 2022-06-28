@@ -2,6 +2,7 @@ const handleBtn = document.querySelector("#handle");
 const logoutAllBtn = document.querySelector("#logoutAll");
 const authNavv = document.querySelectorAll(".authNav");
 const unAuthNavv = document.querySelectorAll(".unAuthNav");
+const errorFlash = document.querySelector("#error_log");
 
 // Variables
 let token;
@@ -16,7 +17,7 @@ const divDom = document.createElement("div");
 const authToken = localStorage.getItem("userSession");
 const sessToken = sessionStorage.getItem("userSession");
 const instance = axios.create({
-  baseURL: "https://pi-lottery.herokuapp.com",
+  baseURL: "https://piecard.onrender.com",
   headers: {
     "Access-Control-Allow-Origin": "*",
     Authorization: `Bearer ${authToken}`
@@ -24,12 +25,13 @@ const instance = axios.create({
   withCredentials: true,
   credentials: "same-origin"
 });
+const urlAPI = "https://piecard.onrender.com";
 
 async function piLogin() {
   try {
     const config = { username: localStorage.username, uid: localStorage.uid };
     const response = await axios.post(
-      `https://piecard.herokuapp.com/register/`,
+      `${urlAPI}/register/`,
       config
     );
     if (response.status === 200 || response.status === 201) {
@@ -67,22 +69,23 @@ async function myProfile() {
   const authToken = localStorage.getItem("userSession");
 
   try {
-    const response = await axios.get(`https://piecard.herokuapp.com/register`, {
+    const response = await axios.get(`${urlAPI}/register`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`
       }
     });
     if (response.status === 200 || 304) {
-      balance.textContent = `${response.data.user.balance}`;
+      balance.textContent = `${response.data.user.balance.toFixed(2)}`;
       elem.textContent = `pi`;
-      balanceTwo.textContent = response.data.user.balance;
+      balanceTwo.textContent = response.data.user.balance.toFixed(2);
       elemTwo.textContent = `pi`;
       balance.appendChild(elem);
       balanceTwo.appendChild(elemTwo);
       username.textContent = `@${response.data.user.username}`;
       name.textContent = response.data.user.username;
       const history = response.data.user.history;
+      localStorage.balance = response.data.user.balance;
       shortHistory(history);
     }
   } catch (error) {
@@ -92,29 +95,30 @@ async function myProfile() {
 }
 
 // Log out all other sessions except current session
-async function logoutAll() {
+async function logout() {
   const authToken = localStorage.getItem("userSession");
-
   try {
     if (authToken === null) {
       flashMessage = "No user is authenticated, please login!!!";
     } else {
+      const username = localStorage.username;
+      const data = {
+        username
+      };
       const response = await axios.post(
-        `https://piecard.herokuapp.com/logout/logout_all`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authToken}`
-          }
-        }
+        `${urlAPI}/logout/`,
+        data
       );
       if (response.status === 200) {
-        flashMessage = `Successfully logged out from other devices!!!`;
+        flashMessage = `Successfully logged out from all devices!!!`;
+        document.getElementById("historySection").textContent = "";
+        document.getElementById("username").textContent = "Please login";
+        document.getElementById("balance").textContent = "0";
       }
     }
   } catch (error) {
     const errorMessage = error.response.data.message;
-    if (errorMessage.length > 0) flashMessage = errorMessage;
+    if (errorMessage.length > 0) flashdeage = errorMessage;
   }
   flashBool = true;
 
@@ -131,28 +135,26 @@ async function logoutAll() {
 }
 
 async function displayHistory() {
+  document.getElementById("historySection").textContent = "";
   const user = localStorage.username;
   const response = await axios.post(
-    "https://piecard.herokuapp.com/register/history"
+    `${urlAPI}/register/history`
   );
   if (response == 200) {
-    const historySection = document.querySelector(".historySection");
+    const historySection = document.querySelector("#historySection");
     const history = response["data"]["profile"]["history"];
     for (const transaction of history) {
       const renderDiv = document.createElement("article");
-      const renderTxid = document.createElement("h3");
       const renderAmount = document.createElement("a");
       const renderDate = document.createElement("a");
       const renderClient = document.createElement("a");
       const renderMemo = document.createElement("p");
       renderDiv.className = "historyStyle";
-      renderTxid.textContent = transaction.txid;
       renderAmount.textContent = transaction.amount;
       renderDate.textContent = transaction.date.substring(0, 10);
       renderClient.textContent = transaction.client;
       renderMemo.textContent = transaction.memo;
 
-      renderDiv.appendChild(renderTxid);
       renderDiv.appendChild(renderAmount);
       renderDiv.appendChild(renderDate);
       renderDiv.appendChild(renderClient);
@@ -163,10 +165,10 @@ async function displayHistory() {
 }
 
 async function shortHistory(history) {
+  document.getElementById("historySection").textContent = "";
   historySection.textContent = "";
   for (const transaction of history) {
     const renderDiv = document.createElement("article");
-    const renderTxid = document.createElement("a");
     const renderAmount = document.createElement("h");
     const renderDate = document.createElement("p2");
     const renderClient = document.createElement("h");
@@ -180,13 +182,11 @@ async function shortHistory(history) {
       renderDiv.className = "historyStyleRed";
       renderA.textContent = " sent to ";
     }
-    renderTxid.className = "renderTxid";
     renderAmount.className = "renderAmount";
     renderA.className = "renderAmount";
     renderDate.className = "renderDate";
     renderClient.className = "renderClient";
     renderMemo.className = "renderMemo";
-    renderTxid.textContent = transaction._id;
     renderAmount.textContent = transaction.amount + " Pi";
     renderDate.textContent = transaction.date.substring(0, 10);
     renderClient.textContent = transaction.client;
@@ -199,94 +199,137 @@ async function shortHistory(history) {
     renderDiv.appendChild(br);
     renderDiv.appendChild(renderDate);
     renderDiv.appendChild(br);
-    renderDiv.appendChild(renderTxid);
     historySection.appendChild(renderDiv);
   }
 }
 
 async function payScanned(id) {
-  if (navigator.userAgent.toLowerCase().indexOf("pibrowser") < 0) {
-    alert("Please go to the Pi Browser to make a crypto payment");
-    window.open("pi://www.piecard.co.uk");
-  }
   const authToken = sessionStorage.userSession;
   const data = {
-    id: id,
+    id: id
   };
   const response = await axios.post(
-    `https://piecard.herokuapp.com/payment/scanned`, data, {
+    `${urlAPI}/payment/scanned`,
+    data,
+    {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`
       }
-    });
-  if (response.status === 200) {
-    document.getElementById("payStatus").textContent = "Processing payment...";
+    }
+  );
+  if (
+    response.status === 200 &&
+    response.data.payment.payee !== localStorage.username
+  ) {
     const payment = response.data.payment;
+    document.getElementById("confirmPaymentQR").style.display = "block";
+    document.getElementById(
+      "confirmPaymentQRMessage"
+    ).textContent = `Pay ${payment.amount}Pi to ${payment.payee}?`;
     localStorage.paymentID = payment._id;
     localStorage.amount = payment.amount;
     localStorage.payee = payment.payee;
     localStorage.memo = payment.memo;
-    const verify = confirm(`Pay ${payment.amount} Pi to ${payment.payee}`);
-    if (verify == true){
-      createPayment();
-    } else {
-      alert("Payment cancelled");
-      document.getElementById("payStatus").textContent = "Payment cancelled";
-    }
+    document
+      .getElementById("confirmPaymentQRBtn")
+      .addEventListener("click", createPayment);
+    document
+      .getElementById("cancelPaymentQRBtn")
+      .addEventListener("click", cancelPayment);
+  } else if (response.data.payment.payee == localStorage.username) {
+    document.getElementById("payStatus").textContent =
+      "cannot transfer to yourself";
+    document.getElementById("paymentUnsuccessful").style.display = "block";
   }
+}
+
+function cancelPayment() {
+  document.getElementById("confirmPaymentQR").style.display = "none";
+  document.getElementById("paymentUnsuccessful").style.display = "block";
+  document.getElementById("payStatus").textContent = "payment cancelled";
+}
+
+function makePaymentByUsername() {
+  const amount = document.getElementById("amountUsername").value;
+  const payee = document.getElementById("userUsername").value;
+  if (amount && payee) {
+    openPayUsername();
+    document.getElementById("confirmPaymentUsername").style.display = "block";
+    document.getElementById(
+      "confirmPaymentUsernameMessage"
+    ).textContent = `Pay ${amount}Pi to ${payee}?`;
+  } else alert("Please fill in all the fields marked with *");
+}
+
+function cancelPayByUsername() {
+  document.getElementById("confirmPaymentUsername").style.display = "none";
+  document.getElementById("paymentUsernameCancelled").style.display = "block";
+  document.getElementById("payUsernameStatus").textContent =
+    "payment cancelled";
 }
 
 async function createInvoice() {
   const data = {
-    amount: document.getElementById("amount").value,
-    memo: document.getElementById("memo").value,
+    amount: document.getElementById("amountQR").value,
+    memo: document.getElementById("memoQR").value,
     user: localStorage.username
   };
   const authToken = sessionStorage.userSession;
-  const response = await axios.post('https://piecard.herokuapp.com/payment/create', data, {
+  const response = await axios.post(
+    `${urlAPI}/payment/create`,
+    data,
+    {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`
       }
-    });
+    }
+  );
   if (response.status === 200) {
-    document.getElementById("payStatus").textContent = "Processing payment...";
+    await openInvoiceQR();
     const data = response.data;
-    document.getElementById("invoiceProgress").textContent =
-      "Payment ID: " + data.id + ". Pending...";
+    document.getElementById("invoiceStatus").textContent = "payment pending...";
+    document.getElementById("invoiceID").textContent = data.id;
     document.getElementById("qrcode").textContent = "";
     var qrcode = await new QRCode(document.getElementById("qrcode"), {
       text: data.id,
-      width: 200,
-      height: 200,
+      width: 270,
+      height: 270,
       colorDark: "#000",
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H
     });
     document.getElementById("qrcode").style.padding = "5px";
     document.getElementById("qrcode").style.background = "#fff";
+    document.getElementById("qrcode").style.margin = "auto";
     localStorage.invoiceID = data.id;
     getInvoiceStatus();
-  }
+  } else alert("Unknown error. Please try again later.");
 }
 
 async function getInvoiceStatus() {
   const data = {
-    id: localStorage.invoiceID,
-  }
+    id: localStorage.invoiceID
+  };
   const authToken = sessionStorage.userSession;
   const response = await axios.post(
-    'https://piecard.herokuapp.com/payment/status', data, {
+    `${urlAPI}/payment/status`,
+    data,
+    {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${authToken}`
       }
-    });
+    }
+  );
   if (response.status == 200 && response.data.status == true) {
     document.getElementById(
-      "invoiceProgress"
-    ).textContent = `Payment received! ${response.data.amount} Pi was added to your balance.`;
+      "invoiceStatus"
+    ).textContent = `Payment received! The Pi has been added to your balance.`;
+    document.getElementById("loaderOne").style.display = "none";
+    document.getElementById("qrcode").textContent = "";
+    document.getElementById("invoiceSuccessful").style.display = "block";
     myProfile();
   } else {
     console.log(response);
@@ -294,6 +337,69 @@ async function getInvoiceStatus() {
   }
 }
 
+async function createURLInvoice() {
+  const data = {
+    amount: document.getElementById("amountURL").value,
+    memo: document.getElementById("memoURL").value,
+    user: localStorage.username
+  };
+  const authToken = sessionStorage.userSession;
+  const response = await axios.post(
+    `${urlAPI}/payment/create`,
+    data,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`
+      }
+    }
+  );
+  if (response.status === 200) {
+    await openInvoiceURL();
+    document.getElementById("urlTab").textContent =
+      "https://piecard.co.uk/invoice?id=" + response.data.id;
+  } else alert("Unknown error. Please try again later.");
+}
+
+async function buyPi() {
+  const amount = document.getElementById("topupAmount").value;
+  const username = localStorage.username;
+  const data = {
+    amount,
+    username
+  };
+  openTopupModal();
+  if (amount < 1) {
+    document.getElementById("topupMessage").textContent = "Please enter an amount of at least one.";
+    document.getElementById("topupLoader").style.display = "none";
+  } else {
+    const response = await axios.post(
+      `${urlAPI}/purchase/create`,
+      data
+    );
+    if (response.data.success == true) {
+      document.getElementById("topupSuccessful").style.display = "block";
+      document.getElementById("topupLoader").style.display = "none";
+      window.open(response.data.url);
+    } else if (response.data.message) {
+      document.getElementById("topupMessage").textContent =
+        "We have insufficient Pi to meet this demand. Please try again later or try a smaller amount.";
+      document.getElementById("topupLoader").style.display = "none";
+      document.getElementById("topupUnsuccessful").style.display = "block";
+    } else {
+      document.getElementById("topupLoader").style.display = "none";
+      document.getElementById("topupUnsuccessful").style.display = "block";
+    }
+  }
+}
+
 function openBrowser() {
   window.open("pi://www.piecard.co.uk");
+}
+
+// tempory////////////////////////////////////
+async function force() {
+  localStorage.uid = "111";
+  localStorage.username = "pioneer";
+  piLogin();
 }

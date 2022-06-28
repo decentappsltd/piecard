@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!--CSS-->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" id="activeCSS" href="">
+  <link rel="icon" type="image/png" href="/img/logo.png">
+
+  <!--Google Fonts-->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" rel="stylesheet">
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZWEVZ0Q8NW"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-ZWEVZ0Q8NW');
+  </script>
+
+  <title>Pi eCard</title>
+
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <script>
+    const Pi = window.Pi;
+    Pi.init({
+      version: "2.0",
+      sandbox: false
+    })
+  </script>
+</head>
+
+<body>
+
+  <div style="width: calc(100vw - 40px); height: calc(100vh - 60px); margin: 20px 20px; background: #ffffff; border-radius: 15px; padding: 10px;">
+    
+    <div class="paymentSuccessful" id="paymentSuccessful">
+      <h3>Payment Successful!</h3>
+      <img class="completeImg" src="/img/complete.png"></img>
+    </div>
+    <div class="paymentSuccessful" id="paymentCancelled">
+      <h3>Payment Cancelled</h3>
+      <img class="completeImg" src="/img/failed.png"></img>
+    </div>
+    <div class="paymentSuccessful" id="paymentUnsuccessful">
+      <h3>Payment Unsuccessful</h3>
+      <img class="completeImg" src="/img/failed.png"></img>
+    </div>
+    <div id="confirmPaymentQR">
+      <a id="confirmPaymentQRMessage"></a>
+      <div style="display: flex; flex-direction: row; justify-content: space-between;">
+        <button id="confirmPaymentQRBtn">Yes</button>
+        <button id="cancelPaymentQRBtn">No</button>
+      </div><br><br>
+    </div>
+<!--     <div id="processingPaymentQR" class="loader"></div><br> -->
+    <a class="status" style="position: absolute; bottom: 25px; left: 25px;">Status: <span id="payStatus">please confirm the payment...</span></a>
+
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="js/pipayment.js"></script>
+<!--   <script src="js/scripts.js"></script> -->
+  <script src="js/routes.js"></script>
+  <script src="https://kit.fontawesome.com/3aea44e36d.js" crossorigin="anonymous"></script>
+
+  <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const id = urlParams.get('id');
+    payScanned(id);
+  </script>
+
+</body>
+
+</html>

@@ -5,26 +5,29 @@
   <!--CSS-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" id="activeCSS" href="">
   <link rel="icon" type="image/png" href="/img/logo.png">
 
   <!--Google Fonts-->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka&display=swap" rel="stylesheet">
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZWEVZ0Q8NW"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
 
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
     gtag('config', 'G-ZWEVZ0Q8NW');
   </script>
-  
+
   <title>Pi eCard</title>
 
-  <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+  <script src="/js/qr.js"></script>
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
   <script>
     const Pi = window.Pi;
@@ -39,81 +42,250 @@
   <!--   Invoice -->
   <div id="a" class="box" onclick="activeBox(a)">
     <h3>Invoice ↓</h3>
-    <br>
-    <div id="createInvoice">
-      <form action="/invoice" method="POST" id="form">
-        <label for="amount">Enter amount:</label><br>
-        <input id="amount" name="amount" type="number" required></input><br>
-        <label for="memo">Add memo:</label><br>
-        <input id="memo" name="memo" type="text"></input><br>
-        <input type="button" value="Create" id="invoice_btn" onclick="mainnet()"></input>
-      </form>
+    <div class="a" style="display: block;">
+      <div class="createInvoice">
+        <a class="subheading">create QR code:</a>
+        <form action="/invoiceQR" method="POST" id="formQR">
+          <input class="field" id="amountQR" type="number" placeholder="amount*" required></input><br>
+          <input class="field memo" id="memoQR" type="text" placeholder="memo"></input><br>
+          <input type="button" value="create" id="invoice_btn" onclick="mainnet()"></input> <!--createInvoice()-->
+        </form>
+      </div>
+
+      <div class="createInvoice">
+        <a class="subheading">create URL:</a>
+        <form action="/invoiceURL" method="POST" id="formURL">
+          <input class="field" id="amountURL" type="number" placeholder="amount*" required></input><br>
+          <input class="field memo" id="memoURL" type="text" placeholder="memo"></input><br>
+          <!--         <input class="field" id="expiresURL" type="date" placeholder="expires"></input><br> -->
+          <input type="button" value="create" id="invoice_btn" onclick="createURLInvoice()"></input> <!--createURLInvoice()-->
+        </form>
+      </div>
     </div>
-    <br>
-    <div id="invoiceStatusDiv">
-      <h4>Invoice Status</h4>
-      <p2 id="invoiceProgress">Create an invoice to take a payment</p2><br>
-    </div>
-    <div id="qrcode"></div>
+    <img id="iconA" src="/img/invoice.png" style="height: 50px; margin: auto; margin-top: 8px;"></img>
   </div>
 
   <!--   Pay -->
   <div id="b" class="box" onclick="activeBox(b)">
-    <h3>Pay ↑</h3><br>
-    
-    <img src="/img/blackqr.png" id="qrImg" class="landing"></img>
+    <h3>Pay ↑</h3>
+    <div class="b" style="display: block;">
+      <div class="createPayment">
+        <a class="subheading">scan QR code:</a>
+        <div style="display: flex; flex-direction: row;">
+          <p id="payment_sentence">Scan the recipient's QR code to start the Pi payment</p>
+          <img src="/img/blackqr.png" id="qrImg"></img>
+        </div>
+        <button id="btn-scan-qr">open camera <span id="camSpan" class="fa fa-video-camera"></span></button>
+      </div>
 
-    <div id="container">
-<!--       <button id="btn-scan-qr">Camera</button> -->
-      <button onclick="mainnet()">Camera</button>
-      <canvas hidden="" id="qr-canvas"></canvas>
-      <div id="qr-result" hidden="">
-        <br><br><b>Payment ID:</b> <span id="outputData"></span><br>
-      </div><br>
-      <!--         <button onclick="payUsername()">Pay by username</button> -->
-    </div><br>
-    <div id="payStatusDiv">
-      <h4>Payment Status</h4>
-      <a id="payStatus">Click & to scan QR code to start the payment</a><br>
+      <div class="createPayment">
+        <a class="subheading">pay to username:</a>
+        <form action="/invoice" method="POST" id="usernameForm">
+          <input class="field" id="amountUsername" type="number" placeholder="amount*" required></input><br>
+          <input class="field" id="userUsername" type="text" placeholder="username*" required></input><br>
+          <input class="field" id="memoUsername" type="text" placeholder="memo"></input><br>
+          <input type="button" value="pay" id="invoice_btn" onclick="mainnet()"></input> <!--makePaymentByUsername()-->
+        </form>
+      </div>
     </div>
+
+    <img id="iconB" src="/img/blackqr.png" style="height: 50px; margin: auto; margin-top: 8px;"></img>
   </div>
 
-  <!--   Withdraw -->
+  <!--   Account -->
   <div id="c" class="box" onclick="activeBox(c)">
-    <h3>Withdraw</h3>
+    <h3>Account</h3>
+    <a id="iconC" style="font-size: 12px; margin-bottom: -7px; margin-top: 7px;">balance:</a>
+    <div style="display: flex; flex-direction: row; justify-content: space-evenly; margin-top: 8px;">
+      <a style="display: block;" href="#withdrawAmount" class="fa fa-minus landing" aria-hidden="true"></a>
+      <a id="balance">loading..</a>
+      <a style="display: block;" href="#topupAmount" class="fa fa-plus landing" aria-hidden="true"></a>
+    </div>
 
-    <p2>Balance:</p2>
-    <a id="balance">loading..</a><br><br>
+    <div class="c" style="display: block;">
+      <div class="accountBalance">
+        <a class="subheading">add Pi to balance:</a>
+        <form action="/topup" method="POST">
+          <input class="field" id="topupAmount" name="amount" type="number" placeholder="Enter amount.." required></input>
+          <input type="button" id="wallet" value="deposit" onclick="mainnet()"></input> <!--topUp()-->
+          <input type="button" id="crypto" value="buy" onclick="mainnet()"></input> <!--buyPi()-->
+        </form>
+      </div>
 
-    <form action="/withdraw" method="POST" id="form">
-      <input id="withdrawAmount" name="amount" type="number" placeholder="Enter amount.." required></input>
-      <input type="button" id="max" value="Max" onclick="maxWithdrawal()"></input>
-    </form><br>
-    <button onclick="mainnet()">Withdraw</button><br><br>
-    
-    <p2 class="c" id="balanceTag">Balance: <a class="c" id="balanceTwo"></a></p2>
-    <a class="c" id="name"></a>
-    <img src="/img/card.png" id="card"></img>
+      <div class="accountBalance c">
+        <a class="subheading">withdraw Pi to wallet:</a>
+        <form action="/withdraw" method="POST">
+          <input class="field" id="withdrawAmount" type="number" placeholder="Enter amount.." required></input>
+          <input type="button" id="max" value="max" onclick="maxWithdrawal()"></input>
+          <input type="button" class="button" value="withdraw" onclick="withdraw()"></input>
+        </form>
+      </div>
+
+    </div>
+
+    <button onclick="alert('feature coming soon...')" style="width: 100%; margin-top: 10px; margin-bottom: 10px;" class="landing">see invoices</button>
+
+    <div class="container c" style="display: block;">
+      <a id="username" class="landing">loading..</a>
+      <p2 class="c" id="balanceTag">Balance: <a class="c" id="balanceTwo"></a></p2>
+      <a class="c" id="name"></a>
+      <img src="/img/card.png" id="card"></img>
+    </div>
   </div>
 
   <!--   History -->
   <div id="d" class="box" onclick="activeBox(d)">
-    <h3>History</h3>
-
-    <p2>Logged in as:</p2>
-    <a id="username">loading..</a><br><br>
-
+    <h3 style="margin-bottom: 10px;">History</h3>
     <div id="historySection"></div>
   </div>
 
   <!--   Floating tab -->
+  <div id="popup">
+    <a class="fa tab" onclick="openBrowser()">&#8508;<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal; margin-left: 7px;">Open in Pi Browser</i></a><br>
+    <a class="fa tab" onclick="openInfo()">&#xf05a;<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Info</i></a><br>
+    <a class="fa tab" onclick="location.href='/'">&#xf021;<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Refresh</i></a><br>
+    <a class="fa tab fa-plus" style="color: black;" onclick="toggleMenu(); activeBox(c); location.href='#topupAmount';"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Buy Pi</i></a><br>
+    <a class="fa tab fa-circle-nodes" onclick="alert('feature coming soon...')"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Connect to desktop app</i></a><br>
+    <a class="tab fas fa-file-invoice" onclick="alert('feature coming soon...')"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">View outstanding invoices</i></a><br>
+    <a class="tab fa-solid fa-share-nodes" onclick="alert('feature coming soon...')"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Refer user</i></a><br>
+    <a class="fa fa-sign-out tab" onclick="logout()" aria-hidden="true"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Logout</i></a><br><br>
+    <img src="/img/logo.png" id="logo"></img>
+    <a id="copyright">&copy; Decent Apps Ltd</a>
+    <span id="error_log"></span>
+  </div>
   <div id="float">
-    <a id="piBrowser" onclick="openBrowser()">Pi</a>
-    <a style="font-size:24px" class="fa" onclick="openInfo()">&#xf05a;</a>
-    <a class="fa" onclick="location.href='/'">&#xf021;</a>
+    <i id="menu" onclick="toggleMenu()" class="fas fa-bars"></i>
   </div>
 
+  <div id="tint"></div>
+  <div id="darkTint"></div>
+
   <!--     Modals -->
+  <div class="payModal" id="invoiceQR">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3>Invoice
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closeInvoiceQR()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div class="paymentSuccessful" id="invoiceSuccessful">
+          <h3>Payment Successful!</h3>
+          <img class="completeImg" src="/img/complete.png"></img>
+        </div>
+        <div class="paymentSuccessful" id="invoiceUnsuccessful">
+          <h3>Payment Unsuccessful</h3>
+          <img class="completeImg" src="/img/failed.png"></img>
+        </div>
+        <div id="qrcode"></div><br>
+        <a>ID: <span id="invoiceID"></span><br><br>
+          <a class="status">Status: <span id="invoiceStatus">create an invoice to take a payment</span></a><br><br>
+          <div id="loaderOne" class="loader"></div><br>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="invoiceURL" style="height: 300px;">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3>Invoice
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closeInvoiceURL()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div style="border: solid 1px #030303; border-radius: 3px; padding: 3px; width: 100%;">
+          <a id="urlTab">generating url...</a>
+          <i class="fas fa-copy" style="float: right;" onclick="navigator.clipboard.writeText(document.getElementById('urlTab').textContent);
+  alert('Copied');"></i>
+        </div><br><br><br>
+        <a>Click <span onclick="alert('feature coming soon...')" style="color: #5b4afb;">here</span> to see the progress of your outstanding invoices</a>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="payQR">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3>Payment
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closePayQR()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div class="paymentSuccessful" id="paymentSuccessful">
+          <h3>Payment Successful!</h3>
+          <img class="completeImg" src="/img/complete.png"></img>
+        </div>
+        <div class="paymentSuccessful" id="paymentUnsuccessful">
+          <h3>Payment Cancelled</h3>
+          <img class="completeImg" src="/img/failed.png"></img>
+        </div>
+        <canvas hidden="" id="qr-canvas"></canvas>
+        <div id="qr-result" hidden=""></div><br><br>
+        <div id="confirmPaymentQR">
+          <a id="confirmPaymentQRMessage"></a>
+          <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <button id="confirmPaymentQRBtn">Yes</button>
+            <button id="cancelPaymentQRBtn">No</button>
+          </div><br><br>
+        </div>
+        <a class="status">Status: <span id="payStatus">waiting for camera to open...</span></a>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="payUsername">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3>Payment
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closePayUsername()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div class="paymentSuccessful" id="paymentUsernameSuccessful">
+          <h3>Payment Successful!</h3>
+          <img class="completeImg" src="/img/complete.png"></img>
+        </div>
+        <div class="paymentSuccessful" id="paymentUsernameCancelled">
+          <h3>Payment Cancelled</h3>
+          <img class="completeImg" src="/img/failed.png"></img>
+        </div>
+        <div class="paymentSuccessful" id="paymentUsernameUnsuccessful">
+          <h3>Payment Unsuccessful</h3> 
+          <!-- TODO -->
+          <img class="completeImg" src="/img/failed.png"></img>
+        </div>
+        <div id="confirmPaymentUsername">
+          <a id="confirmPaymentUsernameMessage"></a>
+          <div style="display: flex; flex-direction: row; justify-content: space-between;">
+            <button id="confirmPaymentUsernameBtn" onclick="payByUsername()">Yes</button>
+            <button id="cancelPaymentUsernameBtn" onclick="cancelPayByUsername()">No</button>
+          </div><br><br>
+        </div>
+        <div id="processingPaymentUsername" class="loader"></div><br>
+        <a class="status">Status: <span id="payUsernameStatus">please confirm the payment...</span></a>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="topupModal">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3>Top Up
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closeTopupModal()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div class="paymentSuccessful" id="topupUnsuccessful">
+          <h3>Payment Unsuccessful</h3>
+          <img class="completeImg" src="/img/failed.png"></img>
+        </div>
+        <a style="display: none;" id="topupSuccessful">Please complete the Coinbase payment to receive your Pi. Once the transaction is successful, you may leave the app and the Pi will be automatically added to your balance - please allow 24 hours processing time.</a>
+        <div id="topupLoader" class="loader"></div><br>
+        <a id="topupMessage"></a>
+      </section>
+    </div>
+  </div>
+
   <div class="modal" id="info">
     <div class="modal-dialog">
       <header style="color: #b44afb" class="modal-header">
@@ -159,14 +331,12 @@
             The payment will now be complete, check with the vender to verify with them.
           </li>
         </ol>
-
       </section>
     </div>
   </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
   <script src="js/pipayment.js"></script>
   <script src="js/scripts.js"></script>
   <script src="js/routes.js"></script>
@@ -181,7 +351,7 @@
     }
     
     function mainnet() {
-      alert("Payments are now paused until Mainnet!");
+      alert("Payments are now blocked until Mainnet");
     }
   </script>
 
