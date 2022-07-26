@@ -1,6 +1,6 @@
 function activeBox(clicked) {
   const menu = document.getElementById("popup");
-  if (menu.style.display == "none") {     // || window.screen.width >= 750
+  if (menu.style.display == "none") {
   const boxes = document.getElementsByClassName("box");
   const landingItems = document.querySelectorAll(".landing");
   for (const landing of landingItems) {
@@ -226,7 +226,51 @@ function closeTopupModal() {
   }
 }
 
+function openInvoices() {
+  document.getElementById("invoices").classList.add("is-visible");
+  const tint = document.getElementById("darkTint");
+  tint.style.display = "block";
+  toggleMenu();
+  getInvoices();
+}
+
+function closeInvoices() {
+  document.getElementById("invoices").classList.remove("is-visible");
+  const tint = document.getElementById("darkTint");
+  tint.style.display = "none";
+  document.getElementById("invoicesDiv").innerHTML = "";
+  document.getElementById("loadingInvoicesWheel").style.display = "block";
+}
+
+function closeReferralModal() {
+  document.getElementById("referralModal").classList.remove("is-visible");
+  const tint = document.getElementById("darkTint");
+  tint.style.display = "none";
+}
+
+function openLoginModal() {
+  // const username = document.getElementById("usernameField").value;
+  // const password = document.getElementById("passwordField").value;
+  const username = prompt("username", "");
+  const password = prompt("password", "");
+  appLogin(username, password);
+}
+
+function openTranslate() {
+  document.getElementById("translateModal").classList.add("is-visible");
+  const tint = document.getElementById("darkTint");
+  tint.style.display = "block";
+  toggleMenu();
+}
+
+function closeTranslate() {
+  document.getElementById("translateModal").classList.remove("is-visible");
+  const tint = document.getElementById("darkTint");
+  tint.style.display = "none";
+}
+
 function toggleMenu() {
+  if (window.screen.width < 900) {
   const menu = document.getElementById("popup");
   const tint = document.getElementById("tint");
   if (menu.style.display !== "none") {
@@ -235,6 +279,7 @@ function toggleMenu() {
   } else {
     menu.style.display = "block";
     tint.style.display = "block";
+  }
   }
 }
 
@@ -251,6 +296,13 @@ function copyURL() {
   alert("Copied");
 }
 
+function refer() {
+  toggleMenu();
+  document.getElementById("referralModal").classList.add("is-visible");
+  const tint = document.getElementById("darkTint");
+  tint.style.display = "block";
+  document.getElementById("referralURL").textContent = `https://www.piecard.co.uk/?r=${localStorage.username}`;
+}
 
 
 // QR Scanner

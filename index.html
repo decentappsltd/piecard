@@ -2,6 +2,18 @@
 <html lang="en">
 
 <head>
+  <script>
+    // Check that service workers are supported
+    if ("serviceWorker" in navigator) {
+      // Use the window load event to keep the page load performant
+    
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js");
+      });
+    }
+  </script>
+  <link rel="manifest" href="./manifest.json" />
+  
   <!--CSS-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/css/styles.css">
@@ -41,14 +53,14 @@
 <body>
   <!--   Invoice -->
   <div id="a" class="box" onclick="activeBox(a)">
-    <h3>Invoice ↓</h3>
+    <h3>Invoice↓</h3>
     <div class="a" style="display: block;">
       <div class="createInvoice">
         <a class="subheading">create QR code:</a>
         <form action="/invoiceQR" method="POST" id="formQR">
           <input class="field" id="amountQR" type="number" placeholder="amount*" required></input><br>
           <input class="field memo" id="memoQR" type="text" placeholder="memo"></input><br>
-          <input type="button" value="create" id="invoice_btn" onclick="mainnet()"></input> <!--createInvoice()-->
+          <input type="button" value="create" id="invoice_btn" onclick="createInvoice()"></input>
         </form>
       </div>
 
@@ -58,7 +70,7 @@
           <input class="field" id="amountURL" type="number" placeholder="amount*" required></input><br>
           <input class="field memo" id="memoURL" type="text" placeholder="memo"></input><br>
           <!--         <input class="field" id="expiresURL" type="date" placeholder="expires"></input><br> -->
-          <input type="button" value="create" id="invoice_btn" onclick="createURLInvoice()"></input> <!--createURLInvoice()-->
+          <input type="button" value="create" id="invoice_btn" onclick="createURLInvoice()"></input>
         </form>
       </div>
     </div>
@@ -77,14 +89,13 @@
         </div>
         <button id="btn-scan-qr">open camera <span id="camSpan" class="fa fa-video-camera"></span></button>
       </div>
-
       <div class="createPayment">
         <a class="subheading">pay to username:</a>
         <form action="/invoice" method="POST" id="usernameForm">
           <input class="field" id="amountUsername" type="number" placeholder="amount*" required></input><br>
           <input class="field" id="userUsername" type="text" placeholder="username*" required></input><br>
           <input class="field" id="memoUsername" type="text" placeholder="memo"></input><br>
-          <input type="button" value="pay" id="invoice_btn" onclick="mainnet()"></input> <!--makePaymentByUsername()-->
+          <input type="button" value="pay" id="invoice_btn" onclick="makePaymentByUsername()"></input>
         </form>
       </div>
     </div>
@@ -107,8 +118,8 @@
         <a class="subheading">add Pi to balance:</a>
         <form action="/topup" method="POST">
           <input class="field" id="topupAmount" name="amount" type="number" placeholder="Enter amount.." required></input>
-          <input type="button" id="wallet" value="deposit" onclick="mainnet()"></input> <!--topUp()-->
-          <input type="button" id="crypto" value="buy" onclick="mainnet()"></input> <!--buyPi()-->
+          <input type="button" id="wallet" value="deposit" onclick="topUp()"></input>
+          <input type="button" id="crypto" value="buy" onclick="buyPi()"></input>
         </form>
       </div>
 
@@ -123,7 +134,7 @@
 
     </div>
 
-    <button onclick="alert('feature coming soon...')" style="width: 100%; margin-top: 10px; margin-bottom: 10px;" class="landing">see invoices</button>
+    <button onclick="openInvoices()" style="width: 100%; margin-top: 10px; margin-bottom: 10px;" class="landing">see invoices</button>
 
     <div class="container c" style="display: block;">
       <a id="username" class="landing">loading..</a>
@@ -137,21 +148,23 @@
   <div id="d" class="box" onclick="activeBox(d)">
     <h3 style="margin-bottom: 10px;">History</h3>
     <div id="historySection"></div>
+    <div id="loadingHistoryWheel" class="loader"></div><br>
   </div>
 
   <!--   Floating tab -->
   <div id="popup">
-    <a class="fa tab" onclick="openBrowser()">&#8508;<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal; margin-left: 7px;">Open in Pi Browser</i></a><br>
+<!--     <a class="fa tab" onclick="force()">{/}<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal; margin-left: 7px;">Dev login</i></a><br> -->
+    <span id="navDiv"></span>
     <a class="fa tab" onclick="openInfo()">&#xf05a;<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Info</i></a><br>
     <a class="fa tab" onclick="location.href='/'">&#xf021;<i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Refresh</i></a><br>
     <a class="fa tab fa-plus" style="color: black;" onclick="toggleMenu(); activeBox(c); location.href='#topupAmount';"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Buy Pi</i></a><br>
-    <a class="fa tab fa-circle-nodes" onclick="alert('feature coming soon...')"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Connect to desktop app</i></a><br>
-    <a class="tab fas fa-file-invoice" onclick="alert('feature coming soon...')"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">View outstanding invoices</i></a><br>
-    <a class="tab fa-solid fa-share-nodes" onclick="alert('feature coming soon...')"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Refer user</i></a><br>
-    <a class="fa fa-sign-out tab" onclick="logout()" aria-hidden="true"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Logout</i></a><br><br>
+    <a class="tab fas fa-file-invoice" onclick="openInvoices()"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">View outstanding invoices</i></a><br>
+    <a class="tab fa fa-language" style="transform: translateX(-5px)" onclick="openTranslate()"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Translate page</i></a><br>
+    <a class="tab fa-solid fa-share-nodes" onclick="refer()"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Refer user</i></a><br>
+    <a class="fa fa-sign-out tab" onclick="logout()" aria-hidden="true"><i style="font-size: 15px; font-family: 'Fredoka', sans-serif; font-weight: normal">Logout</i></a><br>
+    <span id="error_log"></span>
     <img src="/img/logo.png" id="logo"></img>
     <a id="copyright">&copy; Decent Apps Ltd</a>
-    <span id="error_log"></span>
   </div>
   <div id="float">
     <i id="menu" onclick="toggleMenu()" class="fas fa-bars"></i>
@@ -198,7 +211,7 @@
           <i class="fas fa-copy" style="float: right;" onclick="navigator.clipboard.writeText(document.getElementById('urlTab').textContent);
   alert('Copied');"></i>
         </div><br><br><br>
-        <a>Click <span onclick="alert('feature coming soon...')" style="color: #5b4afb;">here</span> to see the progress of your outstanding invoices</a>
+        <a>Click <span onclick="openInvoices()" style="color: #5b4afb;">here</span> to see the progress of your outstanding invoices</a>
       </section>
     </div>
   </div>
@@ -250,12 +263,13 @@
           <img class="completeImg" src="/img/failed.png"></img>
         </div>
         <div class="paymentSuccessful" id="paymentUsernameUnsuccessful">
-          <h3>Payment Unsuccessful</h3> 
+          <h3>Payment Unsuccessful</h3>
           <!-- TODO -->
           <img class="completeImg" src="/img/failed.png"></img>
         </div>
         <div id="confirmPaymentUsername">
-          <a id="confirmPaymentUsernameMessage"></a>
+          <a id="confirmPaymentUsernameMessage"></a><br><br>
+          <i id="confirmPaymentUsernameMessageFee"></i>
           <div style="display: flex; flex-direction: row; justify-content: space-between;">
             <button id="confirmPaymentUsernameBtn" onclick="payByUsername()">Yes</button>
             <button id="cancelPaymentUsernameBtn" onclick="cancelPayByUsername()">No</button>
@@ -282,6 +296,59 @@
         <a style="display: none;" id="topupSuccessful">Please complete the Coinbase payment to receive your Pi. Once the transaction is successful, you may leave the app and the Pi will be automatically added to your balance - please allow 24 hours processing time.</a>
         <div id="topupLoader" class="loader"></div><br>
         <a id="topupMessage"></a>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="invoices">
+    <div class="modal-dialog">
+      <header class="modal-header" id="invoicesModalHeader">
+        <h3>Invoices
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closeInvoices()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div style="margin-top: -10px;" id="invoicesDiv"></div>
+        <div id="loadingInvoicesWheel" class="loader"></div><br>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="referralModal" style="height: 400px;">
+    <div class="modal-dialog">
+      <header class="modal-header">
+        <h3>Invoice
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closeReferralModal()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div style="border: solid 1px #030303; border-radius: 3px; padding: 3px; width: 100%; height: 2.5rem;">
+          <a id="referralURL">generating url...</a>
+          <i class="fas fa-copy" style="float: right;" onclick="navigator.clipboard.writeText(document.getElementById('referralURL').textContent);
+  alert('Copied');"></i>
+        </div><br><br><br>
+        <a>Share and recieve Pi for every new signup via this link. <i>The user must use this link inside the Pi Browser and not already have an account to receive the reward. Both you and the new user will receive the Pi reward, which will be added to your Pi eCard balance.</i></a>
+      </section>
+    </div>
+  </div>
+
+  <div class="payModal" id="translateModal" style="height: 150px;">
+    <div class="modal-dialog">
+      <header class="modal-header" id="invoicesModalHeader">
+        <h3>Translate
+          <button class="close-modal" style="width: 40px; color: #5b4afb; background: none; font-size: 20px; margin-top: -8px;" onclick="closeTranslate()">✕</button>
+        </h3>
+      </header>
+      <section class="modal-content">
+        <div id="google_translate_element"></div>
+        <script>
+          function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+              pageLanguage: 'en'
+            }, 'google_translate_element');
+          }
+        </script>
+        <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" id="translateScript"></script>
       </section>
     </div>
   </div>
@@ -340,19 +407,57 @@
   <script src="js/pipayment.js"></script>
   <script src="js/scripts.js"></script>
   <script src="js/routes.js"></script>
-  <script src="https://kit.fontawesome.com/3aea44e36d.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <script>
     if (sessionStorage.userSession !== null) {
       myProfile();
+    } else if (navigator.userAgent.toLowerCase().indexOf("pibrowser") < 0 && localStorage.signed == "true") {
+      const sessionTkn = localStorage.userSession;
+      sessionStorage.userSession = sessionTkn;
+      myProfile();
     }
-    if (navigator.userAgent.toLowerCase().indexOf("pibrowser") >= 0) {
-      document.getElementById("piBrowser").style.display = "none";
-    }
-    
-    function mainnet() {
-      alert("Payments are now blocked until Mainnet");
-    }
+    if (navigator.userAgent.toLowerCase().indexOf("pibrowser") < 0) {
+      const div = document.getElementById("navDiv");
+      const a = document.createElement("a");
+      const i = document.createElement("i");
+      a.classList.add("fa");
+      a.classList.add("tab");
+      a.classList.add("fa-key");
+      a.setAttribute('id', 'appLoginBtn');
+      a.setAttribute('onclick', 'openLoginModal()')
+      i.style.font = "normal italic 15px Fredoka, sans-serif";
+      i.style.margin = "0px 0px 0px 0px";
+      i.textContent = "Login with password";
+      a.appendChild(i);
+      div.appendChild(a);
+      const _a = document.createElement("a");
+      const _i = document.createElement("i");
+      _a.classList.add("fa");
+      _a.classList.add("tab");
+      _a.innerHTML = `&#8508;`;
+      _a.style.transform = "translateX(3px)";
+      _a.setAttribute('onclick', 'openBrowser()')
+      _i.style.font = "normal italic 15px Fredoka, sans-serif";
+      _i.style.margin = "0px 0px 0px 8px";
+      _i.textContent = "Open in Pi Browser";
+      _a.appendChild(_i);
+      div.appendChild(_a);
+    } else {
+      const div = document.getElementById("navDiv");
+      const a = document.createElement("a");
+      const i = document.createElement("i");
+      a.classList.add("fa");
+      a.classList.add("tab");
+      a.classList.add("fa-key");
+      a.setAttribute('onclick', 'addPassword()')
+      i.style.font = "normal italic 15px Fredoka, sans-serif";
+      i.style.margin = "0px 0px 0px 0px";
+      i.textContent = "Enable password login";
+      i.setAttribute('id', 'setPasswordLabel');
+      a.appendChild(i);
+      div.appendChild(a);
+    } 
   </script>
 
 </body>

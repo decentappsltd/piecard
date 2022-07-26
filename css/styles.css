@@ -133,8 +133,9 @@ input {
   position: fixed;
   width: 250px;
   height: 500px;
-  max-height: calc(90vh - 80px);
+  max-height: calc(95vh - 80px);
   overflow-y: scroll;
+  overflow-x: hidden;
   bottom: 80px;
   right: 15px;
   background-color: #fff;
@@ -202,6 +203,7 @@ i {
   z-index: 6;
   overflow: scroll;
   background: #ffffff;
+  overflow-x: hidden;
 }
 .payModal {
   position: fixed;
@@ -453,6 +455,55 @@ a {
   width: 45%;
   margin-top: 20px;
 }
+#invoicesModalHeader {
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+}
+.renderedInvoiceDiv {
+  padding: 10px;
+  padding-left: 5px;
+  padding-right: 5px;
+/*   margin-bottom: 10px; */
+  border-bottom: solid 1px #666666;
+}
+.renderedInvoiceInfoDiv {
+  display: flex;
+  width: 120%;
+  justify-content: space-between;
+}
+.renderedInvoiceTitle {
+  margin-bottom: 0px;
+  font-size: 0.8rem; 
+  color: black;
+}
+.renderedInvoiceMemo {
+  padding: 5px;
+  font-size: 0.75rem;
+}
+.renderedInvoiceDate {
+  font-size: 0.7rem;
+}
+.renderedInvoiceStatus {
+  font-size: 0.7rem;
+  color: red;
+}
+.renderedInvoiceButton {
+  position: absolute;
+  right: 0px;
+  bottom: 5px;
+  width: 20px;
+}
+.statusTrue {
+  color: green;
+}
+.fa-trash-o, .fa-trash {
+  color: red;
+}
+.fa-archive {
+  color: green;
+}
 
 @media screen and (min-width: 620px) and (max-width: 899px) {
   body {
@@ -550,7 +601,7 @@ a {
   .box {
     transform: scale(1.2);
     width: 35%;
-    height: calc(50vh - 120px);
+    height: calc(35%); /**** TODO ****/
     margin-right: 60px;
   }
   #b,
@@ -579,7 +630,7 @@ a {
   }
   .payModal {
     width: 350px;
-    overflow: hidden;
+    overflow: ;
   }
   .modal-dialog {
     width: 310px;
