@@ -60,7 +60,7 @@ async function piLogin() {
       }
     } else {
       const config = { username: localStorage.username, uid: localStorage.uid };
-      const response = await axios.post(`https://server.piecard.co.uk/register/`, config);
+      const response = await axios.post(`https://piecard-backend-dev.herokuapp.com/register/`, config);
       if (response.status === 200 || response.status === 201) {
         const token = response.data.token;
         sessionStorage.removeItem("userSession");
