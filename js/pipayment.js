@@ -15,9 +15,9 @@ async function auth() {
     const username = auth.user.username;
     localStorage.username = username;
     localStorage.uid = uid;
-    if (sessionStorage.userSession == null) {
+    // if (sessionStorage.userSession == null) {
       piLogin();
-    }
+    // }
   });
 }
 
