@@ -363,7 +363,7 @@ async function createInvoice() {
     user: localStorage.username
   };
   const authToken = sessionStorage.userSession;
-  const response = await axios.post(`${urlAPI}/payment/create`, data, {
+  const response = await axios.post(`https://piecard-backend-dev.herokuapp.com/payment/create`, data, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authToken}`
@@ -423,7 +423,7 @@ async function createURLInvoice() {
     user: localStorage.username
   };
   const authToken = sessionStorage.userSession;
-  const response = await axios.post(`${urlAPI}/payment/create`, data, {
+  const response = await axios.post(`https://piecard-backend-dev.herokuapp.com/payment/create`, data, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authToken}`
