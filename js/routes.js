@@ -60,7 +60,7 @@ async function piLogin() {
       }
     } else {
       const config = { username: localStorage.username, uid: localStorage.uid };
-      const response = await axios.post(`https://piecard-backend-dev.herokuapp.com/register/`, config);
+      const response = await axios.post(`${urlAPI}/register/`, config);
       if (response.status === 200 || response.status === 201) {
         const token = response.data.token;
         sessionStorage.removeItem("userSession");
@@ -363,7 +363,7 @@ async function createInvoice() {
     user: localStorage.username
   };
   const authToken = sessionStorage.userSession;
-  const response = await axios.post(`https://piecard-backend-dev.herokuapp.com/payment/create`, data, {
+  const response = await axios.post(`${urlAPI}/payment/create`, data, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authToken}`
@@ -423,7 +423,7 @@ async function createURLInvoice() {
     user: localStorage.username
   };
   const authToken = sessionStorage.userSession;
-  const response = await axios.post(`https://piecard-backend-dev.herokuapp.com/payment/create`, data, {
+  const response = await axios.post(`${urlAPI}/payment/create`, data, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${authToken}`
